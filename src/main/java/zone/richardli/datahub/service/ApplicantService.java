@@ -27,12 +27,12 @@ public class ApplicantService {
     }
 
     private String convertGender(Integer gender) {
-        return switch (gender) {
-            case 1 -> "Male";
-            case 2 -> "Female";
-            case 3 -> "Prefer not to say";
-            default -> throw new IllegalArgumentException("Not a legal gender index");
-        };
+         switch (gender) {
+            case 1: return "Male";
+            case 2: return "Female";
+            case 3: return "Prefer not to say";
+            default: throw new IllegalArgumentException("Not a legal gender index");
+        }
     }
 
     private Float convertMark(ApplicantVO.CourseInput[] courseInputs) {

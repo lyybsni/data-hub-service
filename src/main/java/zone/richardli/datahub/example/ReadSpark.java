@@ -1,5 +1,6 @@
 package zone.richardli.datahub.example;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
@@ -19,29 +20,21 @@ import org.apache.spark.api.java.function.Function;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
+import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import scala.Tuple2;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import org.apache.spark.sql.SparkSession;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import java.util.*;
 
+@Slf4j
 @Component
 public class ReadSpark implements Serializable {
 
-    public void execute(JavaSparkContext javaSparkContext) throws InterruptedException {
-        Logger.getLogger("org").setLevel(Level.ERROR);
+    public void execute(JavaSparkContext javaSparkContext) {
         SparkSession spark = SparkSession.builder().master("yarn").master("local").appName("hello-wrold")
                 // .config("spark.some.config.option", "some-value")
                 .getOrCreate();
@@ -65,7 +58,8 @@ public class ReadSpark implements Serializable {
         scan.addColumn(family_bytes, gender_bytes);
         scan.addColumn(family_bytes, user_type_bytes);
         // 设置读取的最大的版本数
-        scan.setMaxVersions(3);
+        scan.readVersions(3);
+
         try {
             // 将scan编码
             ClientProtos.Scan proto = ProtobufUtil.toScan(scan);
@@ -85,12 +79,14 @@ public class ReadSpark implements Serializable {
 
             // 再将以上结果转成Row类型RDD
             JavaRDD<Row> HBaseRow = HBaseRdd.map(new Function<>() {
+
                 private static final long serialVersionUID = 1L;
 
                 @Override
                 public Row call(Tuple2<ImmutableBytesWritable, Result> tuple2) {
                     Result result = tuple2._2;
                     String rowKey = Bytes.toString(result.getRow());
+                    log.info("INFO - {}", rowKey);
                     String birthday = Bytes.toString(result.getValue(family_bytes, birthday_bytes));
                     String gender = Bytes.toString(result.getValue(family_bytes, gender_bytes));
                     String user_type = Bytes.toString(result.getValue(family_bytes, user_type_bytes));
@@ -98,27 +94,20 @@ public class ReadSpark implements Serializable {
                     // return RowFactory.create(birthday, gender, user_type);
                 }
             });
-            // 顺序必须与构建RowRDD的顺序一致
-            List<StructField> structFields = Arrays.asList(
-                    DataTypes.createStructField("user_id", DataTypes.StringType, true),
-                    DataTypes.createStructField("birthday", DataTypes.StringType, true),
-                    DataTypes.createStructField("gender", DataTypes.StringType, true),
-                    DataTypes.createStructField("user_type", DataTypes.StringType, true));
-            // 构建schema
-            StructType schema = DataTypes.createStructType(structFields);
-            // 生成DataFrame
-            Dataset<Row> HBaseDF = spark.createDataFrame(HBaseRow, schema);
-            HBaseDF.show();
+
+            show(spark, HBaseRow);
+
             // 获取birthday多版本数据
             JavaRDD<Row> multiVersionHBaseRow = HBaseRdd
                     .mapPartitions(new FlatMapFunction<>() {
 
+
                         private static final long serialVersionUID = 1L;
 
                         @Override
-                        public Iterator<Row> call(Iterator<Tuple2<ImmutableBytesWritable, Result>> t) throws Exception {
+                        public Iterator<Row> call(Iterator<Tuple2<ImmutableBytesWritable, Result>> t) {
                             // TODO Auto-generated method stub
-                            List<Row> rows = new ArrayList<Row>();
+                            List<Row> rows = new ArrayList<>();
                             while (t.hasNext()) {
                                 Result result = t.next()._2();
                                 String rowKey = Bytes.toString(result.getRow());
@@ -143,15 +132,23 @@ public class ReadSpark implements Serializable {
             multiVersionHBaseDF.show();
 
         } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (spark != null) {
-                // spark.close();
-            }
+            log.error("Spark Task Exception:", e);
         }
+    }
 
-        // spark.close();
-
+    private void show(SparkSession spark, JavaRDD<Row> HBaseRow) {
+        // 顺序必须与构建RowRDD的顺序一致
+        List<StructField> structFields = Arrays.asList(
+                DataTypes.createStructField("user_id", DataTypes.StringType, true),
+                DataTypes.createStructField("birthday", DataTypes.StringType, true),
+                DataTypes.createStructField("gender", DataTypes.StringType, true),
+                DataTypes.createStructField("user_type", DataTypes.StringType, true));
+        // 构建schema
+        StructType schema = DataTypes.createStructType(structFields);
+        // 生成DataFrame
+        Dataset<Row> HBaseDF = spark.createDataFrame(HBaseRow, schema);
+        HBaseDF.show();
     }
 
 }
+
