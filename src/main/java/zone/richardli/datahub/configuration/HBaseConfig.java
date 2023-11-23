@@ -34,7 +34,11 @@ public class HBaseConfig {
         return configuration;
     }
 
-    @Bean
+    /**
+     * Disable HBase for the current stage
+     * @return
+     */
+    // @Bean
     public Admin admin() {
         Admin admin = null;
         try {

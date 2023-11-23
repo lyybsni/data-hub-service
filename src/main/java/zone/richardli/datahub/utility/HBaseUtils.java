@@ -16,10 +16,10 @@ import java.util.*;
  * A simple HBase orm for Spring Boot projects
  * Reference: <a href="https://www.hangge.com/blog/cache/detail_2968.html">...</a>
  */
-@Service
+// @Service
 public class HBaseUtils {
 
-    @Autowired
+    // @Autowired
     private Admin hbaseAdmin;
 
     /**

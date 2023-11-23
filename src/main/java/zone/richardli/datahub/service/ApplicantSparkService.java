@@ -1,8 +1,73 @@
 package zone.richardli.datahub.service;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.internal.LinkedTreeMap;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import zone.richardli.datahub.model.applicant.ApplicantPO;
+import zone.richardli.datahub.model.common.FieldDefinition;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Slf4j
 @Service
 public class ApplicantSparkService {
+
+    private static final Map<String, Class> m = new HashMap<>();
+
+    private static final Map<String, POSaver> mc = new HashMap<>();
+
+    static {
+        m.put("applicant", ApplicantPO.class);
+    }
+
+    private final ApplicantService applicantService;
+
+    private ApplicantSparkService(ApplicantService applicantService) {
+        this.applicantService = applicantService;
+
+        mc.put("applicant", applicantService);
+    }
+
+    private static final Gson gson = new Gson();
+
+    public List<Object> mockedSparkBuilder(Object schema, Object[] data, String target) {
+        // for current stage, we do not consider recursive structures yet
+        LinkedTreeMap<String, Object> temp = gson.fromJson(gson.toJson(schema), LinkedTreeMap.class);
+        LinkedTreeMap<String, FieldDefinition> result = new LinkedTreeMap<>();
+
+        temp.forEach((k, v) -> {
+            result.put(k, gson.fromJson(gson.toJson(v), FieldDefinition.class));
+        });
+
+        log.info("{}", result);
+        List<Object> list = Arrays.stream(data).map(item -> constructDataMapping(result, item, target)).collect(Collectors.toList());
+        mc.get(target).batchInsertOrUpdate(list);
+        return list;
+    }
+
+    private Object constructDataMapping(LinkedTreeMap<String, FieldDefinition> schema, Object data, String target) {
+        HashMap<String, Object> datammap = gson.fromJson(gson.toJson(data), HashMap.class);
+
+        JsonElement element = gson.toJsonTree(new HashMap<String, Object>());
+        JsonObject object = element.getAsJsonObject();
+
+        schema.forEach((k, v) -> {
+            if (v.getFrom() != null) {
+                object.add(k, gson.toJsonTree(datammap.get(v.getFrom())));
+            } else if (v.getExpression() != null) {
+                // TODO: the expression part should be well considered
+                object.add(k, gson.toJsonTree(datammap.get("firstname") + " " + datammap.get("lastname")));
+            }
+        });
+
+        return gson.fromJson(element, m.get(target));
+    }
 
 }

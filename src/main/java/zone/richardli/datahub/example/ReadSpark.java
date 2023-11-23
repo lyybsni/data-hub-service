@@ -31,7 +31,7 @@ import java.io.Serializable;
 import java.util.*;
 
 @Slf4j
-@Component
+// @Component
 public class ReadSpark implements Serializable {
 
     public void execute(JavaSparkContext javaSparkContext) {

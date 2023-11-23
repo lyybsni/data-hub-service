@@ -1,11 +1,38 @@
 package zone.richardli.datahub.service;
 
+import com.google.common.collect.ImmutableMap;
+import dev.morphia.Datastore;
+import dev.morphia.query.Query;
+import dev.morphia.query.experimental.filters.Filter;
+import dev.morphia.query.experimental.filters.Filters;
+import dev.morphia.query.experimental.updates.UpdateOperators;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import zone.richardli.datahub.model.applicant.ApplicantDTO;
+import zone.richardli.datahub.model.applicant.ApplicantPO;
 import zone.richardli.datahub.model.applicant.ApplicantVO;
 
+import java.util.List;
+
 @Service
-public class ApplicantService {
+@Slf4j
+@AllArgsConstructor
+public class ApplicantService implements POSaver<ApplicantPO> {
+
+    private Datastore datastore;
+
+    @Override
+    public boolean batchInsertOrUpdate(List<ApplicantPO> pos) {
+        pos.forEach(item -> {
+            datastore.find(ApplicantPO.class)
+                    .filter(Filters.eq("applicantId", item.getApplicantId()))
+                    .update(UpdateOperators.set(item))
+                    .execute();
+            log.info("Modifying {}", item);
+        });
+        return true;
+    }
 
     /**
      * Given an applicant input, convert it into storage form.
@@ -15,7 +42,7 @@ public class ApplicantService {
         ApplicantDTO dto = new ApplicantDTO();
 
         dto.setApplicantId(vo.getApplicantId());
-        dto.setFullName(convertName(vo.getFirstName(), vo.getLastName()));
+        dto.setName(convertName(vo.getFirstName(), vo.getLastName()));
         dto.setGender(convertGender(vo.getGender()));
         dto.setAcademicMark(convertMark(vo.getCourseInputs()));
 
