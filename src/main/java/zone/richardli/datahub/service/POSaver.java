@@ -6,4 +6,7 @@ public interface POSaver<T> {
 
     boolean batchInsertOrUpdate(List<T> POs);
 
+    List<T> batchRead();
+
+
 }

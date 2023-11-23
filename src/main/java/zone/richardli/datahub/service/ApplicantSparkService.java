@@ -25,6 +25,7 @@ public class ApplicantSparkService {
 
     static {
         m.put("applicant", ApplicantPO.class);
+        m.put("output", Object.class);
     }
 
     private final ApplicantService applicantService;
@@ -39,17 +40,30 @@ public class ApplicantSparkService {
 
     public List<Object> mockedSparkBuilder(Object schema, Object[] data, String target) {
         // for current stage, we do not consider recursive structures yet
-        LinkedTreeMap<String, Object> temp = gson.fromJson(gson.toJson(schema), LinkedTreeMap.class);
-        LinkedTreeMap<String, FieldDefinition> result = new LinkedTreeMap<>();
-
-        temp.forEach((k, v) -> {
-            result.put(k, gson.fromJson(gson.toJson(v), FieldDefinition.class));
-        });
+        LinkedTreeMap<String, FieldDefinition> result = parseSchema(schema);
 
         log.info("{}", result);
         List<Object> list = Arrays.stream(data).map(item -> constructDataMapping(result, item, target)).collect(Collectors.toList());
         mc.get(target).batchInsertOrUpdate(list);
         return list;
+    }
+
+    public List<Object> mockedSparkReader(Object schema, String target) {
+        LinkedTreeMap<String, FieldDefinition> result = parseSchema(schema);
+        POSaver resource = mc.get(target);
+        return (List<Object>) resource.batchRead().stream()
+                .map(item -> constructDataMapping(result, item, "output"))
+                .collect(Collectors.toList());
+    }
+
+
+    private LinkedTreeMap<String, FieldDefinition> parseSchema(Object schema) {
+        LinkedTreeMap<String, Object> temp = gson.fromJson(gson.toJson(schema), LinkedTreeMap.class);
+        LinkedTreeMap<String, FieldDefinition> result = new LinkedTreeMap<>();
+        temp.forEach((k, v) -> {
+            result.put(k, gson.fromJson(gson.toJson(v), FieldDefinition.class));
+        });
+        return result;
     }
 
     private Object constructDataMapping(LinkedTreeMap<String, FieldDefinition> schema, Object data, String target) {

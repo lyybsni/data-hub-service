@@ -1,9 +1,6 @@
 package zone.richardli.datahub.service;
 
-import com.google.common.collect.ImmutableMap;
 import dev.morphia.Datastore;
-import dev.morphia.query.Query;
-import dev.morphia.query.experimental.filters.Filter;
 import dev.morphia.query.experimental.filters.Filters;
 import dev.morphia.query.experimental.updates.UpdateOperators;
 import lombok.AllArgsConstructor;
@@ -14,6 +11,8 @@ import zone.richardli.datahub.model.applicant.ApplicantPO;
 import zone.richardli.datahub.model.applicant.ApplicantVO;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @Slf4j
@@ -25,13 +24,26 @@ public class ApplicantService implements POSaver<ApplicantPO> {
     @Override
     public boolean batchInsertOrUpdate(List<ApplicantPO> pos) {
         pos.forEach(item -> {
-            datastore.find(ApplicantPO.class)
+            long count = datastore.find(ApplicantPO.class)
                     .filter(Filters.eq("applicantId", item.getApplicantId()))
                     .update(UpdateOperators.set(item))
-                    .execute();
+                    .execute()
+                    .getMatchedCount();
+
+            if (count != 1) {
+                datastore.save(item);
+            }
+
             log.info("Modifying {}", item);
         });
         return true;
+    }
+
+    @Override
+    public List<ApplicantPO> batchRead() {
+        return StreamSupport
+                .stream(datastore.find(ApplicantPO.class).spliterator(), true)
+                .collect(Collectors.toList());
     }
 
     /**
