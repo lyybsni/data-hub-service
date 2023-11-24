@@ -2,8 +2,8 @@ package zone.richardli.datahub.controller;
 
 import com.google.gson.Gson;
 import com.opencsv.exceptions.CsvException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,14 +19,13 @@ import java.util.List;
  */
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/data-ingest")
 public class DataIngestController {
 
-    @Autowired
-    private ApplicantSparkService applicantSparkService;
+    private final ApplicantSparkService applicantSparkService;
 
-    @Autowired
-    private CSVReader csvReader;
+    private final CSVReader csvReader;
 
     /**
      * RESTful interface for directly sending data with well-defined schema.
@@ -41,8 +40,6 @@ public class DataIngestController {
 
     /**
      * Upload the data directly
-     * @param file
-     * @param target
      */
     @PostMapping(value = "/raw-file", consumes = {"*/*"})
     void dataBulkInput(@RequestParam("file") MultipartFile file,
@@ -57,8 +54,8 @@ public class DataIngestController {
         } catch (IOException | CsvException e) {
             throw new RuntimeException(e);
         }
-        applicantSparkService.mockedSparkBuilder(input.getSchema(), input.getData(), target);
 
+        applicantSparkService.mockedSparkBuilder(input.getSchema(), input.getData(), target);
     }
 
     /**
