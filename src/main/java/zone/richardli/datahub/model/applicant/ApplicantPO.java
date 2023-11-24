@@ -5,6 +5,8 @@ import dev.morphia.annotations.Id;
 import dev.morphia.annotations.Property;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 @Entity("applicants")
 public class ApplicantPO {
@@ -37,5 +39,11 @@ public class ApplicantPO {
      * [Credits, Percentage] => Weighted Average
      */
     private Float academicMark;
+
+    @Property
+    private long phone;
+
+    @Property
+    private Date graduationDate;
 
 }
