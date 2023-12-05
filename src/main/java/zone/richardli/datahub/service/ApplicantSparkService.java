@@ -73,11 +73,11 @@ public class ApplicantSparkService {
         JsonObject object = element.getAsJsonObject();
 
         schema.forEach((k, v) -> {
-            if (v.getFrom() != null) {
-                object.add(k, gson.toJsonTree(datammap.get(v.getFrom())));
-            } else if (v.getExpression() != null) {
+            if (v.getExpression() != null) {
                 // TODO: the expression part should be well considered
                 object.add(k, gson.toJsonTree(datammap.get("firstname") + " " + datammap.get("lastname")));
+            } else {
+                object.add(k, gson.toJsonTree(datammap.get(v.getFrom())));
             }
         });
 

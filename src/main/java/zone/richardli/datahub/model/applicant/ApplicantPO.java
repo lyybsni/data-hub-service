@@ -1,5 +1,6 @@
 package zone.richardli.datahub.model.applicant;
 
+import dev.morphia.annotations.Embedded;
 import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Id;
 import dev.morphia.annotations.Property;
@@ -44,6 +45,15 @@ public class ApplicantPO {
     private long phone;
 
     @Property
-    private Date graduationDate;
+    private Education education;
+
+    @Data
+    @Embedded
+    public static class Education {
+        @Property
+        private Date graduationDate;
+    }
 
 }
+
+
