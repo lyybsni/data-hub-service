@@ -59,7 +59,7 @@ public class AdminService {
     public List<SchemaMappingPO> getRelatedSchemaMapping(String id) {
         // id is the schema id
         return StreamSupport.stream(datastore.find(SchemaMappingPO.class)
-                        .filter(Filters.eq("schema.id", id))
+                        .filter(Filters.eq("schema", id))
                         .spliterator(), true)
                 .collect(Collectors.toList());
     }

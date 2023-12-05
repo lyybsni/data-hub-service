@@ -61,6 +61,14 @@ Content-Type: application/json
 }
 ```
 
+#### Internal: Data Conversion
+Define protocols for front-end and back-end to communicate, support basic augmentations. The schema should comply with JSON format, supporting recursive structures and arrays.
+
+Intentional Support:
+- Regex Conversion
+- Field Computation
+- Expression Computation
+
 ### Expandable Points - Musts
 ```
 Blockchain Log
@@ -71,3 +79,7 @@ Blockchain Log
 Actuator
 Metric
 ```
+
+### Notes
+
+- Using Spark can help to address NoSQL problem that input document shall not follow the schema required in Java ORM.

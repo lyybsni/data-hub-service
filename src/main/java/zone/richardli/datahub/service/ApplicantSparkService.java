@@ -15,6 +15,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * @since Dec 5
+ * TODO:
+ * This service should utilize Spark to operate on MongoDB,
+ * currently it is not implemented but using the ODM solution
+ */
 @Slf4j
 @Service
 public class ApplicantSparkService {
@@ -77,7 +83,7 @@ public class ApplicantSparkService {
                 // TODO: the expression part should be well considered
                 object.add(k, gson.toJsonTree(datammap.get("firstname") + " " + datammap.get("lastname")));
             } else {
-                object.add(k, gson.toJsonTree(datammap.get(v.getFrom())));
+                object.add(k, gson.toJsonTree(datammap.get(v.getInherit())));
             }
         });
 

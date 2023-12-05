@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+/**
+ * This service serves as a MongoDB read/writer using ODM.
+ * With Datastore stabling the connection from back-end service with database.
+ */
 @Service
 @Slf4j
 @AllArgsConstructor
