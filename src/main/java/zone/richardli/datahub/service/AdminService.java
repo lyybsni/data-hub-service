@@ -2,6 +2,7 @@ package zone.richardli.datahub.service;
 
 import dev.morphia.Datastore;
 import dev.morphia.query.experimental.filters.Filters;
+import dev.morphia.query.experimental.updates.UpdateOperators;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,13 @@ public class AdminService {
         log.info("ID is {}", id);
         datastore.save(new SchemaPO(id, vo.getSchema()));
         return id;
+    }
+
+    public void updateSchema(SchemaVO vo) {
+        datastore.find(SchemaPO.class)
+                .filter(Filters.eq("_id", vo.getId()))
+                .update(UpdateOperators.set("schema", vo.getSchema()))
+                .execute();
     }
 
     public List<SchemaPO> getSchema(String id) {

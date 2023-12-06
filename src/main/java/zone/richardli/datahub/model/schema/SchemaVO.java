@@ -5,6 +5,8 @@ import lombok.Data;
 @Data
 public class SchemaVO {
 
+    private String id;
+
     private String schema;
 
 }

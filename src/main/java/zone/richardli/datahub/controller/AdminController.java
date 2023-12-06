@@ -1,7 +1,6 @@
 package zone.richardli.datahub.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import zone.richardli.datahub.model.schema.SchemaMappingPO;
 import zone.richardli.datahub.model.schema.SchemaMappingVO;
@@ -34,6 +33,11 @@ public class AdminController {
     @PostMapping("/upload-schema")
     String saveMapping(@RequestBody SchemaVO schemaVO) {
         return adminService.saveSchema(schemaVO);
+    }
+
+    @PutMapping("/schema/{id}")
+    void updateMapping(@RequestBody SchemaVO schemaVO) {
+        adminService.updateSchema(schemaVO);
     }
 
     @GetMapping("/schema/{id}")
