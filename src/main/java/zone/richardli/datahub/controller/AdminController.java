@@ -2,10 +2,8 @@ package zone.richardli.datahub.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import zone.richardli.datahub.model.schema.SchemaMappingPO;
-import zone.richardli.datahub.model.schema.SchemaMappingVO;
-import zone.richardli.datahub.model.schema.SchemaPO;
-import zone.richardli.datahub.model.schema.SchemaVO;
+import org.springframework.web.multipart.MultipartFile;
+import zone.richardli.datahub.model.schema.*;
 import zone.richardli.datahub.service.AdminService;
 
 import java.util.List;
@@ -30,7 +28,7 @@ public class AdminController {
     }
 
 
-    @PostMapping("/upload-schema")
+    @PostMapping("/schema")
     String saveMapping(@RequestBody SchemaVO schemaVO) {
         return adminService.saveSchema(schemaVO);
     }
@@ -72,6 +70,11 @@ public class AdminController {
     @GetMapping("/history/{id}")
     List<SchemaMappingPO> getExistingSchemaMappingUnder(@PathVariable("id") String id) {
         return adminService.getRelatedSchemaMapping(id);
+    }
+
+    @PostMapping("/schema-from-csv")
+    CSVSchemaDataDTO resolveSchemaFromCSV(@RequestParam MultipartFile file) {
+        return adminService.resolveCSVSchema(file);
     }
 
 }
