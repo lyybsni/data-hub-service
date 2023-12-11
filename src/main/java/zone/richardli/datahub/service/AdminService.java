@@ -1,6 +1,5 @@
 package zone.richardli.datahub.service;
 
-import com.google.gson.Gson;
 import com.opencsv.exceptions.CsvException;
 import dev.morphia.Datastore;
 import dev.morphia.query.experimental.filters.Filters;
@@ -9,12 +8,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import zone.richardli.datahub.model.common.JSONDataInput;
 import zone.richardli.datahub.model.schema.*;
 import zone.richardli.datahub.task.CSVReader;
 import zone.richardli.datahub.utility.IdUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -33,7 +32,7 @@ public class AdminService {
     public String saveSchema(SchemaVO vo) {
         String id = IdUtil.generateId();
         log.info("ID is {}", id);
-        datastore.save(new SchemaPO(id, vo.getSchema()));
+        datastore.save(new SchemaPO(id, vo.getSchema().toString(), new ArrayList<>()));
         return id;
     }
 
