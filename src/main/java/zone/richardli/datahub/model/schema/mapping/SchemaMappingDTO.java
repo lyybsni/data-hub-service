@@ -1,4 +1,4 @@
-package zone.richardli.datahub.model.schema;
+package zone.richardli.datahub.model.schema.mapping;
 
 import lombok.Data;
 

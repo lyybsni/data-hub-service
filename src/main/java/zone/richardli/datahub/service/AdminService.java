@@ -9,6 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import zone.richardli.datahub.model.schema.*;
+import zone.richardli.datahub.model.schema.mapping.SchemaMappingPO;
+import zone.richardli.datahub.model.schema.mapping.SchemaMappingVO;
+import zone.richardli.datahub.model.schema.schema.SchemaPO;
+import zone.richardli.datahub.model.schema.schema.SchemaVO;
 import zone.richardli.datahub.task.CSVReader;
 import zone.richardli.datahub.utility.IdUtil;
 
@@ -32,7 +36,7 @@ public class AdminService {
     public String saveSchema(SchemaVO vo) {
         String id = IdUtil.generateId();
         log.info("ID is {}", id);
-        datastore.save(new SchemaPO(id, vo.getSchema().toString(), new ArrayList<>()));
+        datastore.save(new SchemaPO(id, vo.getSchema()));
         return id;
     }
 
@@ -58,8 +62,8 @@ public class AdminService {
         String id = IdUtil.generateId();
         SchemaPO temp = new SchemaPO();
         temp.setId(vo.getSchemaId());
-
-        datastore.save(new SchemaMappingPO(id, vo.getMapping(), temp));
+        vo.getMapping().forEach((k, v) -> v.setPath(k));
+        datastore.save(new SchemaMappingPO(id, new ArrayList<>(vo.getMapping().values()), temp));
         return id;
     }
 

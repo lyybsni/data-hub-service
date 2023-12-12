@@ -1,6 +1,7 @@
 package zone.richardli.datahub.model.common;
 
 import java.util.List;
+import java.util.Map;
 
 import dev.morphia.annotations.Embedded;
 import dev.morphia.annotations.Property;
@@ -35,7 +36,7 @@ public class FieldDefinition {
      * e.g. ["root.application.firstName", "root.application.lastName"]
      */
     @Property
-    private List<String> variables;
+    private Map<String, String> variables;
 
     @Property
     private String regex;

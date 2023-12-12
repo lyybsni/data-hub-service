@@ -1,10 +1,17 @@
 package zone.richardli.datahub.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.json.JSONException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import zone.richardli.datahub.model.schema.*;
+import zone.richardli.datahub.model.schema.mapping.SchemaMappingPO;
+import zone.richardli.datahub.model.schema.mapping.SchemaMappingVO;
+import zone.richardli.datahub.model.schema.schema.SchemaPO;
+import zone.richardli.datahub.model.schema.schema.SchemaVO;
+import zone.richardli.datahub.model.schema.trail.ConversionTrailRun;
 import zone.richardli.datahub.service.AdminService;
+import zone.richardli.datahub.utility.JSONUtils;
 
 import java.util.List;
 
@@ -75,6 +82,12 @@ public class AdminController {
     @PostMapping("/schema-from-csv")
     CSVSchemaDataDTO resolveSchemaFromCSV(@RequestParam MultipartFile file) {
         return adminService.resolveCSVSchema(file);
+    }
+
+    @PostMapping("/try")
+    Object trail(@RequestBody ConversionTrailRun vo) throws JSONException {
+        SchemaMappingPO po = adminService.getSchemaMapping(vo.getMappingId()).get(0);
+        return JSONUtils.constructObject(JSONUtils.parseJSONTree(vo.getJson()), po.getMapping(), Object.class);
     }
 
 }
