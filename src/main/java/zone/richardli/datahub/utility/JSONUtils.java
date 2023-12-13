@@ -21,12 +21,17 @@ public class JSONUtils {
      * Convert JSON string to Map in the form of (Path, Content)
      */
     public static Map<String, Object> parseJSONTree(String jsonString) {
+        return parseJSONTree(jsonString, true);
+    }
+
+    public static Map<String, Object> parseJSONTree(String jsonString, boolean realData) {
         JsonElement jsonElement = gson.fromJson(jsonString, JsonElement.class);
         Map<String, Object> result = new HashMap<>();
-        constructJsonHelper(jsonElement, result, "");
+        constructJsonHelper(jsonElement, result, "", realData);
         log.info("{}", result);
         return result;
     }
+
 
     /**
      * Construct an object from a JSON map and a list of rules.
@@ -70,32 +75,39 @@ public class JSONUtils {
         return object;
     }
 
-
-    private static void constructJsonHelper(JsonElement element, Map<String, Object> jsonMap, String parentPath) {
+    private static void constructJsonHelper(JsonElement element, Map<String, Object> jsonMap, String parentPath, boolean realdata) {
 
         if (element.isJsonArray()) {
             // case 1: the object is an array
             JsonArray asJsonArray = element.getAsJsonArray();
-            for (int i = 0; i < asJsonArray.size(); i++) {
-                constructJsonHelper(asJsonArray.get(i), jsonMap, parentPath + "[" + i + "]");
+            if (realdata) {
+                for (int i = 0; i < asJsonArray.size(); i++) {
+                    constructJsonHelper(asJsonArray.get(i), jsonMap, parentPath + "[" + i + "]", realdata);
+                }
+            } else {
+                // only record the type of the array
+                constructJsonHelper(asJsonArray.get(0), jsonMap, parentPath + "[0]", realdata);
             }
         } else if (element.isJsonPrimitive()) {
             // case 2: the object is a primitive
             if (element.getAsJsonPrimitive().isBoolean()) {
-                jsonMap.put(parentPath, element.getAsBoolean());
+                if (realdata) jsonMap.put(parentPath, element.getAsBoolean());
+                else jsonMap.put(parentPath, "Boolean");
             } else if (element.getAsJsonPrimitive().isNumber()) {
-                jsonMap.put(parentPath, element.getAsNumber());
+                if (realdata) jsonMap.put(parentPath, element.getAsNumber());
+                else jsonMap.put(parentPath, "Number");
             } else {
-                jsonMap.put(parentPath, element.getAsString());
+                if (realdata) jsonMap.put(parentPath, element.getAsString());
+                else jsonMap.put(parentPath, "String");
             }
         } else if (element.isJsonObject()) {
             // case 3: the object is an object
             JsonObject asJsonObject = element.getAsJsonObject();
             asJsonObject.keySet().forEach(key -> {
                 if (parentPath.isEmpty()) {
-                    constructJsonHelper(asJsonObject.get(key), jsonMap, key);
+                    constructJsonHelper(asJsonObject.get(key), jsonMap, key, realdata);
                 } else
-                    constructJsonHelper(asJsonObject.get(key), jsonMap, parentPath + "." + key);
+                    constructJsonHelper(asJsonObject.get(key), jsonMap, parentPath + "." + key, realdata);
             });
         } else if (!element.isJsonNull()) {
             // case 4: the object is null.

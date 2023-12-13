@@ -13,6 +13,7 @@ import zone.richardli.datahub.model.schema.trail.ConversionTrailRun;
 import zone.richardli.datahub.service.AdminService;
 import zone.richardli.datahub.utility.JSONUtils;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -36,13 +37,18 @@ public class AdminController {
 
 
     @PostMapping("/schema")
-    String saveMapping(@RequestBody SchemaVO schemaVO) {
+    String saveSchema(@RequestBody SchemaVO schemaVO) {
         return adminService.saveSchema(schemaVO);
     }
 
-    @PutMapping("/schema/{id}")
-    void updateMapping(@RequestBody SchemaVO schemaVO) {
+    @PutMapping("/schema")
+    void updateSchema(@RequestBody SchemaVO schemaVO) {
         adminService.updateSchema(schemaVO);
+    }
+
+    @GetMapping("/schemas")
+    List<SchemaPO> getSchemas() {
+        return adminService.getSchemas();
     }
 
     @GetMapping("/schema/{id}")
@@ -55,9 +61,9 @@ public class AdminController {
         return result.get(0);
     }
 
-    @GetMapping("/schemas")
-    List<SchemaPO> getSchemas() {
-        return adminService.getSchemas();
+    @PutMapping ("/mapping/{id}")
+    void updateMapping(@PathVariable("id") String id, @RequestBody SchemaMappingVO vo) {
+        this.adminService.updateSchemaMapping(id, vo);
     }
 
     @PostMapping("/mapping")
@@ -80,8 +86,13 @@ public class AdminController {
     }
 
     @PostMapping("/schema-from-csv")
-    CSVSchemaDataDTO resolveSchemaFromCSV(@RequestParam MultipartFile file) {
+    ResolveSchemaDataDTO resolveSchemaFromCSV(@RequestParam MultipartFile file) {
         return adminService.resolveCSVSchema(file);
+    }
+
+    @PostMapping("/schema-from-json")
+    ResolveSchemaDataDTO resolveSchemaFromJSON(@RequestParam MultipartFile file) throws IOException {
+        return adminService.resolveJSONSchema(file);
     }
 
     @PostMapping("/try")
