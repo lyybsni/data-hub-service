@@ -30,6 +30,7 @@ public class OperationAspect {
     private Consumer<Field> consume(StringBuilder sb, Object result) {
         return field -> {
             try {
+                field.setAccessible(true);
                 if (field.get(result) != null) {
                     sb.append(field.getName());
                     sb.append(": ");
@@ -37,6 +38,8 @@ public class OperationAspect {
                 }
             } catch (IllegalAccessException e) {
                 log.error("Failed to get field value", e);
+            } finally {
+                field.setAccessible(false);
             }
         };
     }
@@ -52,6 +55,7 @@ public class OperationAspect {
             Object CRUDVo = jp.getArgs()[0];
 
             Arrays.stream(CRUDVo.getClass().getDeclaredFields())
+                    .peek(i -> log.info(i.getName()))
                     .filter(item -> item.getName().endsWith("id") || item.getName().endsWith("Id"))
                     .forEach(consume(sb, CRUDVo));
         }

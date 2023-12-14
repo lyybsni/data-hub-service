@@ -86,9 +86,9 @@ public class AdminService {
     }
 
     @Loggable
-    public void updateSchemaMapping(String mappingId, SchemaMappingVO vo) {
+    public void updateSchemaMapping(SchemaMappingVO vo) {
         datastore.find(SchemaMappingPO.class)
-                .filter(Filters.eq("_id", mappingId))
+                .filter(Filters.eq("_id", vo.getMappingId()))
                 .update(
                         UpdateOperators.set("mapping", new ArrayList<>(vo.getMapping().values())),
                         UpdateOperators.set("updatedAt", OffsetDateTime.now())

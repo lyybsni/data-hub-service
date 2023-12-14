@@ -12,4 +12,6 @@ public class SchemaMappingVO {
 
     private String schemaId;
 
+    private String mappingId;
+
 }

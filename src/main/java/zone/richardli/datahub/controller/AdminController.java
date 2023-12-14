@@ -49,8 +49,9 @@ public class AdminController {
         return adminService.saveSchema(schemaVO);
     }
 
-    @PutMapping("/schema")
-    void updateSchema(@RequestBody SchemaVO schemaVO) {
+    @PutMapping("/schema/{id}")
+    void updateSchema(@RequestBody SchemaVO schemaVO, @PathVariable("id") String id) {
+        schemaVO.setId(id);
         adminService.updateSchema(schemaVO);
     }
 
@@ -69,14 +70,15 @@ public class AdminController {
         return result.get(0);
     }
 
-    @PutMapping ("/mapping/{id}")
-    void updateMapping(@PathVariable("id") String id, @RequestBody SchemaMappingVO vo) {
-        this.adminService.updateSchemaMapping(id, vo);
-    }
-
     @PostMapping("/mapping")
     String saveSchemaMapping(@RequestBody SchemaMappingVO vo) {
         return this.adminService.saveSchemaMapping(vo);
+    }
+
+    @PutMapping ("/mapping/{id}")
+    void updateMapping(@PathVariable("id") String id, @RequestBody SchemaMappingVO vo) {
+        vo.setMappingId(id);
+        this.adminService.updateSchemaMapping(vo);
     }
 
     @GetMapping("/mapping/{id}")
