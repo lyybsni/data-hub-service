@@ -8,7 +8,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import zone.richardli.datahub.model.common.JSONDataInput;
+import zone.richardli.datahub.model.ingest.DataIngestDTO;
+import zone.richardli.datahub.model.ingest.DataIngestVO;
 import zone.richardli.datahub.service.MockApplicantSparkService;
+import zone.richardli.datahub.service.SparkService;
 import zone.richardli.datahub.task.CSVReader;
 
 import java.io.IOException;
@@ -23,7 +26,9 @@ import java.util.List;
 @RequestMapping("/data-ingest")
 public class DataIngestController {
 
-    private final MockApplicantSparkService applicantSparkService;
+    private final MockApplicantSparkService mockApplicantSparkService;
+
+    private final SparkService sparkService;
 
     private final CSVReader csvReader;
 
@@ -34,12 +39,16 @@ public class DataIngestController {
      */
     @PostMapping("/raw")
     void dataInput(@RequestBody JSONDataInput input, @Param("target") String target) {
-        applicantSparkService.mockedSparkBuilder(input.getSchema(), input.getData(), target);
+        mockApplicantSparkService.mockedSparkBuilder(input.getSchema(), input.getData(), target);
     }
 
     @PostMapping("/raw/{id}")
-    void dataInput(@PathVariable("id") String mappingId, @RequestBody Object rawData) {
-
+    DataIngestDTO dataInput(@PathVariable("id") String mappingId,
+                            @RequestParam("clientId") String clientId,
+                            @RequestBody DataIngestVO vo) {
+        vo.setMappingId(mappingId);
+        vo.setClientId(clientId);
+        return sparkService.write(vo);
     }
 
     /**
@@ -59,7 +68,7 @@ public class DataIngestController {
             throw new RuntimeException(e);
         }
 
-        applicantSparkService.mockedSparkBuilder(input.getSchema(), input.getData(), target);
+        mockApplicantSparkService.mockedSparkBuilder(input.getSchema(), input.getData(), target);
     }
 
     @PostMapping("/raw-file/{id}")
@@ -72,7 +81,7 @@ public class DataIngestController {
      */
     @PostMapping("/read")
     List<Object> dataOutput(@RequestBody JSONDataInput input, @Param("target") String target) {
-        return applicantSparkService.mockedSparkReader(input.getSchema(), target);
+        return mockApplicantSparkService.mockedSparkReader(input.getSchema(), target);
     }
 
 }

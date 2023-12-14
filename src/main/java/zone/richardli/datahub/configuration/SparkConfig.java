@@ -11,11 +11,19 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SparkConfig {
 
+    /*
+     spark.mongodb.write.connection.uri=mongodb://127.0.0.1/
+     spark.mongodb.write.database=myDB
+     spark.mongodb.write.collection=myCollection
+     spark.mongodb.write.convertJson=any
+     */
     @Bean
     public SparkConf sparkConf() {
         return new SparkConf()
                 .setAppName("MySparkApp")
-                .setMaster("local[*]");
+                .setMaster("local[*]")
+                .set("spark.mongodb.write.connection.uri", "mongodb://127.0.0.1/")
+                .set("spark.mongodb.write.database", "data-hub");
     }
 
     @Bean

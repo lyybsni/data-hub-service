@@ -51,7 +51,7 @@ public class JSONUtils {
         return new ArrayList<>();
     }
 
-    private static JSONObject mapToJSONObject(Map<String, Object> map, List<FieldDefinition> rules) throws JSONException {
+    public static JSONObject mapToJSONObject(Map<String, Object> map, List<FieldDefinition> rules) throws JSONException {
         rules.sort(Comparator.comparing(FieldDefinition::getPath));
 
         JSONObject object = new JSONObject();

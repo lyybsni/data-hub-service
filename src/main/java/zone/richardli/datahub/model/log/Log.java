@@ -25,4 +25,7 @@ public class Log {
     @Property
     private String remarks;
 
+    @Property
+    private LogStatus status;
+
 }

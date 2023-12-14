@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import zone.richardli.datahub.advise.exceptions.InvalidInputException;
 import zone.richardli.datahub.model.log.Loggable;
 import zone.richardli.datahub.model.schema.ResolveSchemaDataDTO;
 import zone.richardli.datahub.model.schema.mapping.SchemaMappingPO;
@@ -111,13 +112,18 @@ public class AdminService {
                 .collect(Collectors.toList());
     }
 
+    @Loggable
     public ResolveSchemaDataDTO resolveCSVSchema(MultipartFile file) {
+        String originalName = Objects.requireNonNull(file.getOriginalFilename());
+        if (!originalName.endsWith(".csv")) {
+            throw new InvalidInputException("Unsupported file type. Currently only support .csv file.");
+        }
+
         ResolveSchemaDataDTO dto = new ResolveSchemaDataDTO();
-        dto.setName(Objects.requireNonNull(file.getOriginalFilename()).split(".csv")[0]);
+
+        dto.setName(originalName.split(".csv")[0]);
         try {
-
             Map<String, Object> input = (Map<String, Object>) csvReader.readFileCSV(file).toArray()[0];
-
             dto.setFields(input.entrySet().stream().map(entry -> {
                 TreeNode field = new TreeNode();
                 field.setId(IdUtil.generateId());
@@ -126,23 +132,31 @@ public class AdminService {
                 field.setType(entry.getValue().getClass().getSimpleName());
                 return field;
             }).collect(Collectors.toList()));
-
-            log.info("{}", input);
         } catch (IOException | CsvException e) {
-            throw new RuntimeException(e);
+            throw new InvalidInputException("Invalid file input",e);
         }
 
         return dto;
     }
 
-    public ResolveSchemaDataDTO resolveJSONSchema(MultipartFile file) throws IOException {
+    @Loggable
+    public ResolveSchemaDataDTO resolveJSONSchema(MultipartFile file) {
         ResolveSchemaDataDTO dto = new ResolveSchemaDataDTO();
         dto.setName(Objects.requireNonNull(file.getOriginalFilename()).split(".json")[0]);
 
-        Map<String, Object> mmp = JSONUtils.parseJSONTree(csvReader.readFile(file), false);
+        Map<String, Object> mmp;
+        try {
+            mmp = JSONUtils.parseJSONTree(csvReader.readFile(file), false);
+        } catch (IOException e) {
+            throw new InvalidInputException("Invalid file input. Please check if the file is corrupted.");
+        }
 
         List<TreeNode> mmpCopy = new ArrayList<>();
         mmp.forEach((path, res) -> {
+            if (path.isEmpty()) {
+                throw new InvalidInputException("Invalid field name.");
+            }
+
             TreeNode node = new TreeNode();
             String[] subPaths = path.split("\\.");
             String possibleName = subPaths[subPaths.length - 1];
@@ -151,7 +165,6 @@ public class AdminService {
             String name = possibleName.replace("[0]", "");
             String type = isArray ? "Array" : (String) res;
             String id = IdUtil.generateId();
-            // String pathCopy = path.replace("[0]", "");
 
             node.setArray(isArray);
             node.setId(id);

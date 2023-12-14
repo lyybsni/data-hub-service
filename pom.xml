@@ -151,6 +151,11 @@
 			<version>${spark.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.mongodb.spark</groupId>
+			<artifactId>mongo-spark-connector_2.12</artifactId>
+			<version>10.2.1</version>
+		</dependency>
+		<dependency>
 			<groupId>org.codehaus.janino</groupId>
 			<artifactId>commons-compiler</artifactId>
 			<version>3.0.16</version>
