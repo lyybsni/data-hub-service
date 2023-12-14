@@ -17,13 +17,14 @@ import java.util.stream.Collectors;
 
 /**
  * @since Dec 5
- * TODO:
+ * @deprecated Dec 14
  * This service should utilize Spark to operate on MongoDB,
  * currently it is not implemented but using the ODM solution
  */
 @Slf4j
 @Service
-public class ApplicantSparkService {
+@Deprecated
+public class MockApplicantSparkService {
 
     private static final Map<String, Class> m = new HashMap<>();
 
@@ -36,7 +37,7 @@ public class ApplicantSparkService {
 
     private final ApplicantService applicantService;
 
-    private ApplicantSparkService(ApplicantService applicantService) {
+    private MockApplicantSparkService(ApplicantService applicantService) {
         this.applicantService = applicantService;
 
         mc.put("applicant", applicantService);

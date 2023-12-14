@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import zone.richardli.datahub.model.common.JSONDataInput;
-import zone.richardli.datahub.service.ApplicantSparkService;
+import zone.richardli.datahub.service.MockApplicantSparkService;
 import zone.richardli.datahub.task.CSVReader;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.util.List;
 @RequestMapping("/data-ingest")
 public class DataIngestController {
 
-    private final ApplicantSparkService applicantSparkService;
+    private final MockApplicantSparkService applicantSparkService;
 
     private final CSVReader csvReader;
 
@@ -37,6 +37,10 @@ public class DataIngestController {
         applicantSparkService.mockedSparkBuilder(input.getSchema(), input.getData(), target);
     }
 
+    @PostMapping("/raw/{id}")
+    void dataInput(@PathVariable("id") String mappingId, @RequestBody Object rawData) {
+
+    }
 
     /**
      * Upload the data directly
@@ -56,6 +60,11 @@ public class DataIngestController {
         }
 
         applicantSparkService.mockedSparkBuilder(input.getSchema(), input.getData(), target);
+    }
+
+    @PostMapping("/raw-file/{id}")
+    void dataBulkInput(@RequestParam("file") MultipartFile file, @PathVariable("id") String mappingId) {
+
     }
 
     /**

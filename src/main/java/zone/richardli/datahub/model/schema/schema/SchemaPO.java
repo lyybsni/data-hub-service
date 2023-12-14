@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
+
 @Data
 @Entity("schemas")
 @NoArgsConstructor
@@ -19,4 +21,9 @@ public class SchemaPO {
     @Property
     private String schema;
 
+    @Property
+    private OffsetDateTime createdAt;
+
+    @Property
+    private OffsetDateTime updatedAt;
 }

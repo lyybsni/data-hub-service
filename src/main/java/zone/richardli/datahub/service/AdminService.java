@@ -19,6 +19,7 @@ import zone.richardli.datahub.utility.IdUtil;
 import zone.richardli.datahub.utility.JSONUtils;
 
 import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,15 +38,20 @@ public class AdminService {
 
     public String saveSchema(SchemaVO vo) {
         String id = IdUtil.generateId();
-        log.info("ID is {}", id);
-        datastore.save(new SchemaPO(id, vo.getSchema()));
+        datastore.save(new SchemaPO(
+                id,
+                vo.getSchema(),
+                OffsetDateTime.now(),
+                OffsetDateTime.now()
+        ));
         return id;
     }
 
     public void updateSchema(SchemaVO vo) {
         datastore.find(SchemaPO.class)
                 .filter(Filters.eq("_id", vo.getId()))
-                .update(UpdateOperators.set("schema", vo.getSchema()))
+                .update(UpdateOperators.set("schema", vo.getSchema()),
+                        UpdateOperators.set("updatedAt", OffsetDateTime.now()))
                 .execute();
     }
 
@@ -65,14 +71,23 @@ public class AdminService {
         SchemaPO temp = new SchemaPO();
         temp.setId(vo.getSchemaId());
         vo.getMapping().forEach((k, v) -> v.setPath(k));
-        datastore.save(new SchemaMappingPO(id, new ArrayList<>(vo.getMapping().values()), temp));
+        datastore.save(new SchemaMappingPO(
+                id,
+                new ArrayList<>(vo.getMapping().values()),
+                temp,
+                OffsetDateTime.now(),
+                OffsetDateTime.now()
+        ));
         return id;
     }
 
     public void updateSchemaMapping(String mappingId, SchemaMappingVO vo) {
         datastore.find(SchemaMappingPO.class)
                 .filter(Filters.eq("_id", mappingId))
-                .update(UpdateOperators.set("mapping", new ArrayList<>(vo.getMapping().values())))
+                .update(
+                        UpdateOperators.set("mapping", new ArrayList<>(vo.getMapping().values())),
+                        UpdateOperators.set("updatedAt", OffsetDateTime.now())
+                )
                 .execute();
     }
 
@@ -95,6 +110,7 @@ public class AdminService {
         ResolveSchemaDataDTO dto = new ResolveSchemaDataDTO();
         dto.setName(Objects.requireNonNull(file.getOriginalFilename()).split(".csv")[0]);
         try {
+
             Map<String, Object> input = (Map<String, Object>) csvReader.readFileCSV(file).toArray()[0];
 
             dto.setFields(input.entrySet().stream().map(entry -> {
