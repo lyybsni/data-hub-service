@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import zone.richardli.datahub.model.log.Loggable;
 import zone.richardli.datahub.model.schema.ResolveSchemaDataDTO;
 import zone.richardli.datahub.model.schema.mapping.SchemaMappingPO;
 import zone.richardli.datahub.model.schema.mapping.SchemaMappingVO;
@@ -36,6 +37,7 @@ public class AdminService {
 
     private final CSVReader csvReader;
 
+    @Loggable
     public String saveSchema(SchemaVO vo) {
         String id = IdUtil.generateId();
         datastore.save(new SchemaPO(
@@ -47,6 +49,7 @@ public class AdminService {
         return id;
     }
 
+    @Loggable
     public void updateSchema(SchemaVO vo) {
         datastore.find(SchemaPO.class)
                 .filter(Filters.eq("_id", vo.getId()))
@@ -66,6 +69,7 @@ public class AdminService {
         return StreamSupport.stream(datastore.find(SchemaPO.class).spliterator(), true).collect(Collectors.toList());
     }
 
+    @Loggable
     public String saveSchemaMapping(SchemaMappingVO vo) {
         String id = IdUtil.generateId();
         SchemaPO temp = new SchemaPO();
@@ -81,6 +85,7 @@ public class AdminService {
         return id;
     }
 
+    @Loggable
     public void updateSchemaMapping(String mappingId, SchemaMappingVO vo) {
         datastore.find(SchemaMappingPO.class)
                 .filter(Filters.eq("_id", mappingId))

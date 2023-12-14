@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import zone.richardli.datahub.model.log.Log;
 import zone.richardli.datahub.model.schema.*;
 import zone.richardli.datahub.model.schema.mapping.SchemaMappingPO;
 import zone.richardli.datahub.model.schema.mapping.SchemaMappingVO;
@@ -11,6 +12,7 @@ import zone.richardli.datahub.model.schema.schema.SchemaPO;
 import zone.richardli.datahub.model.schema.schema.SchemaVO;
 import zone.richardli.datahub.model.schema.trail.ConversionTrailRun;
 import zone.richardli.datahub.service.AdminService;
+import zone.richardli.datahub.service.LogService;
 import zone.richardli.datahub.utility.JSONUtils;
 
 import java.io.IOException;
@@ -27,6 +29,8 @@ public class AdminController {
 
     private final AdminService adminService;
 
+    private final LogService logService;
+
     void viewUserList() {
 
     }
@@ -35,6 +39,10 @@ public class AdminController {
 
     }
 
+    @GetMapping("/history")
+    List<Log> history() {
+        return logService.readLogs();
+    }
 
     @PostMapping("/schema")
     String saveSchema(@RequestBody SchemaVO schemaVO) {
