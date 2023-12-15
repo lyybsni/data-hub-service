@@ -39,7 +39,7 @@ public class CSVReader {
         JsonObject object = element.getAsJsonObject();
 
         for (int i = 0; i < header.length; i++) {
-            object.add(header[i], gson.toJsonTree(gson.toJson(fields[i])));
+            object.add(header[i], gson.toJsonTree(fields[i]));
         }
 
         return gson.fromJson(element, Object.class);

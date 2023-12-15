@@ -25,5 +25,16 @@ public class ExpressionMappingTest {
         Assertions.assertEquals("hello world", rule.compute(source, expression));
     }
 
+    @Test
+    void test_convert_date() {
+        Map<String, Object> source = new HashMap<>();
+
+        String expression = "T(java.time.OffsetDateTime).parse(${1})";
+
+        source.put("${1}", "2023-11-24T06:27:37.406Z");
+
+        log.info("{}", rule.compute(source, expression));
+    }
+
 
 }

@@ -72,8 +72,14 @@ public class DataIngestController {
     }
 
     @PostMapping("/raw-file/{id}")
-    void dataBulkInput(@RequestParam("file") MultipartFile file, @PathVariable("id") String mappingId) {
-
+    DataIngestDTO dataBulkInput(@RequestParam("file") MultipartFile file,
+                       @RequestParam("clientId") String clientId,
+                       @PathVariable("id") String mappingId) throws IOException, CsvException {
+        DataIngestVO vo = new DataIngestVO();
+        vo.setMappingId(mappingId);
+        vo.setClientId(clientId);
+        vo.setData(csvReader.readFileCSV(file).toArray());
+        return sparkService.write(vo);
     }
 
     /**
@@ -82,6 +88,11 @@ public class DataIngestController {
     @PostMapping("/read")
     List<Object> dataOutput(@RequestBody JSONDataInput input, @Param("target") String target) {
         return mockApplicantSparkService.mockedSparkReader(input.getSchema(), target);
+    }
+
+    @GetMapping("/merge")
+    void merge() {
+        sparkService.merge("a", "b", List.of(""));
     }
 
 }
