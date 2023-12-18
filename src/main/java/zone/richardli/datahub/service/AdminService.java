@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -73,12 +74,24 @@ public class AdminService {
     @Loggable
     public String saveSchemaMapping(SchemaMappingVO vo) {
         String id = IdUtil.generateId();
+        List<String> primary = new ArrayList<>();
         SchemaPO temp = new SchemaPO();
         temp.setId(vo.getSchemaId());
-        vo.getMapping().forEach((k, v) -> v.setPath(k));
+
+        AtomicReference<String> collection = new AtomicReference<>("");
+        vo.getMapping().forEach((k, v) -> {
+            // get the primary nodes
+            if (v.isPrimary()) { primary.add(v.getPath()); }
+            // get the name of root node
+            if (!k.contains(".")) { collection.set(k); }
+            v.setPath(k);
+        });
+
         datastore.save(new SchemaMappingPO(
                 id,
                 new ArrayList<>(vo.getMapping().values()),
+                collection.get(),
+                primary,
                 temp,
                 OffsetDateTime.now(),
                 OffsetDateTime.now()

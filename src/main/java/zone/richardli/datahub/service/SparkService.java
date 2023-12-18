@@ -27,6 +27,7 @@ import zone.richardli.datahub.utility.JSONUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,6 +41,8 @@ public class SparkService {
 
     private final MongoClient mongoClient;
 
+    private final ThreadPoolExecutor executor;
+
     @Loggable
     public DataIngestDTO write(DataIngestVO vo) {
         // find one
@@ -48,10 +51,12 @@ public class SparkService {
                 .filter(Filters.eq("_id", mappingId))
                 .first();
 
-        // TODO: should change to a more readable way
-        // TODO: change the collection name with randomized identifiers
-        String targetCollectionName = (String) JSONUtils.parseJSONTree(mapping.getSchema().getSchema()).get("[0].name");
-        log.info("Writing into {}", targetCollectionName);
+        // (String) JSONUtils.parseJSONTree(mapping.getSchema().getSchema()).get("[0].name");  // TODO: change this
+        String target = mapping.getCollection();
+        List<String> primary = mapping.getPrimaryKey();
+        String targetCollectionName = String.format("%s-%s-%s", target, vo.getClientId(), System.currentTimeMillis());
+
+        log.info("-- Start to write into collection: {} --", targetCollectionName);
 
         SparkSession spark = SparkSession.builder()
                 .sparkContext(context.sc())
@@ -75,9 +80,13 @@ public class SparkService {
                 .mode("append")
                 .save();
 
+        log.info("-- Finished writing into collection: {} --", targetCollectionName);
+
         DataIngestDTO dto = new DataIngestDTO();
-        dto.setTargetCollectionName(targetCollectionName);
+        dto.setTargetCollectionName(target);
         dto.setAffectedRows(vo.getData().length);
+
+        executor.submit(() -> merge(targetCollectionName, target, primary));
         return dto;
     }
 
@@ -85,13 +94,13 @@ public class SparkService {
         return 0;
     }
 
-    public void merge(String fromCollection, String toCollection, List<String> identifiers) {
+    protected void merge(String fromCollection, String toCollection, List<String> identifiers) {
 
         /* TODO: following are to changed */
-        log.info("AAAA");
-        fromCollection = "programmeCode";
-        toCollection = "programmeCode-bak";
-        identifiers = List.of("programmeCode");
+        log.info("-- Start to merge the data --");
+//        fromCollection = "programmeCode";
+//        toCollection = "programmeCode-bak";
+//        identifiers = List.of("programmeCode");
 
         // Use spark streaming to merge the data
         MongoCollection<Document> from = mongoClient
@@ -115,11 +124,10 @@ public class SparkService {
                             .whenNotMatched(MergeOptions.WhenNotMatched.INSERT))))
                     .toCollection();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Merging met error: {}", e.getMessage());
         }
 
-        log.info("BBBB");
-
+        log.info("-- End of merging, quit the submission task --");
     }
 
     private String convertObject(Object data, SchemaMappingPO po) throws JSONException {

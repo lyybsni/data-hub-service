@@ -38,6 +38,7 @@ public class DataIngestController {
      * @param target the target document to be written
      */
     @PostMapping("/raw")
+    @Deprecated
     void dataInput(@RequestBody JSONDataInput input, @Param("target") String target) {
         mockApplicantSparkService.mockedSparkBuilder(input.getSchema(), input.getData(), target);
     }
@@ -54,6 +55,7 @@ public class DataIngestController {
     /**
      * Upload the data directly
      */
+    @Deprecated
     @PostMapping(value = "/raw-file", consumes = {"*/*"})
     void dataBulkInput(@RequestParam("file") MultipartFile file,
                        @RequestParam("schema") MultipartFile schema,
@@ -85,14 +87,10 @@ public class DataIngestController {
     /**
      * Given an output schema, map the data into the desired shape
      */
+    @Deprecated
     @PostMapping("/read")
     List<Object> dataOutput(@RequestBody JSONDataInput input, @Param("target") String target) {
         return mockApplicantSparkService.mockedSparkReader(input.getSchema(), target);
-    }
-
-    @GetMapping("/merge")
-    void merge() {
-        sparkService.merge("a", "b", List.of(""));
     }
 
 }

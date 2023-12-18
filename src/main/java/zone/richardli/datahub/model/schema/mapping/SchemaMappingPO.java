@@ -25,6 +25,12 @@ public class SchemaMappingPO {
     @Property
     private List<FieldDefinition> mapping;
 
+    @Property
+    private String collection;
+
+    @Property
+    private List<String> primaryKey;
+
     @Reference
     private SchemaPO schema;
 
