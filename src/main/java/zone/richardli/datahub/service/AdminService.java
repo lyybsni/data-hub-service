@@ -81,11 +81,10 @@ public class AdminService {
         temp.setId(vo.getSchemaId());
 
         AtomicReference<String> collection = new AtomicReference<>("");
+        vo.getMapping().keySet().stream().findAny().map(s -> s.split("\\.")[0]).ifPresent(collection::set);
         vo.getMapping().forEach((k, v) -> {
             // get the primary nodes
             if (v.isPrimary()) { primary.add(v.getPath()); }
-            // get the name of root node
-            if (!k.contains(".")) { collection.set(k); }
             v.setPath(k);
         });
 

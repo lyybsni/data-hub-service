@@ -43,15 +43,6 @@ public class DataIngestController {
         mockApplicantSparkService.mockedSparkBuilder(input.getSchema(), input.getData(), target);
     }
 
-    @PostMapping("/raw/{id}")
-    DataIngestDTO dataInput(@PathVariable("id") String mappingId,
-                            @RequestParam("clientId") String clientId,
-                            @RequestBody DataIngestVO vo) {
-        vo.setMappingId(mappingId);
-        vo.setClientId(clientId);
-        return sparkService.write(vo);
-    }
-
     /**
      * Upload the data directly
      */
@@ -73,6 +64,24 @@ public class DataIngestController {
         mockApplicantSparkService.mockedSparkBuilder(input.getSchema(), input.getData(), target);
     }
 
+    /**
+     * Given an output schema, map the data into the desired shape
+     */
+    @Deprecated
+    @PostMapping("/read")
+    List<Object> dataOutput(@RequestBody JSONDataInput input, @Param("target") String target) {
+        return mockApplicantSparkService.mockedSparkReader(input.getSchema(), target);
+    }
+
+    @PostMapping("/raw/{id}")
+    DataIngestDTO dataInput(@PathVariable("id") String mappingId,
+                            @RequestParam("clientId") String clientId,
+                            @RequestBody DataIngestVO vo) {
+        vo.setMappingId(mappingId);
+        vo.setClientId(clientId);
+        return sparkService.write(vo);
+    }
+
     @PostMapping("/raw-file/{id}")
     DataIngestDTO dataBulkInput(@RequestParam("file") MultipartFile file,
                        @RequestParam("clientId") String clientId,
@@ -82,15 +91,6 @@ public class DataIngestController {
         vo.setClientId(clientId);
         vo.setData(csvReader.readFileCSV(file).toArray());
         return sparkService.write(vo);
-    }
-
-    /**
-     * Given an output schema, map the data into the desired shape
-     */
-    @Deprecated
-    @PostMapping("/read")
-    List<Object> dataOutput(@RequestBody JSONDataInput input, @Param("target") String target) {
-        return mockApplicantSparkService.mockedSparkReader(input.getSchema(), target);
     }
 
 }

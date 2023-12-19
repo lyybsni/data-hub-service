@@ -132,7 +132,7 @@ public class AdminController {
     }
 
     @PostMapping("/schema-from-json")
-    ResolveSchemaDataDTO resolveSchemaFromJSON(@RequestParam MultipartFile file) throws IOException {
+    ResolveSchemaDataDTO resolveSchemaFromJSON(@RequestParam MultipartFile file) {
         return adminService.resolveJSONSchema(file);
     }
 

@@ -52,12 +52,9 @@ public class SparkService {
                 .filter(Filters.eq("_id", mappingId))
                 .first();
 
-        // (String) JSONUtils.parseJSONTree(mapping.getSchema().getSchema()).get("[0].name");  // TODO: change this
+        // TODO: change this
         String target = mapping.getCollection();
-        List<String> primary = mapping.getMapping().stream()
-                .filter(FieldDefinition::isPrimary)
-                .map(FieldDefinition::getPath)
-                .collect(Collectors.toList());
+        List<String> primary = mapping.getPrimaryKey();
 
         String targetCollectionName = String.format("%s-%s-%s", target, vo.getClientId(), System.currentTimeMillis());
 
@@ -122,10 +119,12 @@ public class SparkService {
             from.createIndex(indexDocument, new IndexOptions().unique(true));
             to.createIndex(indexDocument, new IndexOptions().unique(true));
 
-            from.aggregate(List.of(Aggregates.merge(toCollection,
+            from.aggregate(List.of(
+                    new Document("$unset", "_id"),  // do not modify the identifier
+                    Aggregates.merge(toCollection,
                     new MergeOptions()
                             .uniqueIdentifier(identifiers)   // TODO change
-                            .whenMatched(MergeOptions.WhenMatched.REPLACE)
+                            .whenMatched(MergeOptions.WhenMatched.MERGE)
                             .whenNotMatched(MergeOptions.WhenNotMatched.INSERT))))
                     .toCollection();
         } catch (Exception e) {
