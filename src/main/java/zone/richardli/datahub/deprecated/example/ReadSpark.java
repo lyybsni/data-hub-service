@@ -1,4 +1,4 @@
-package zone.richardli.datahub.example;
+package zone.richardli.datahub.deprecated.example;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.conf.Configuration;
@@ -24,14 +24,16 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
-import org.springframework.stereotype.Component;
 import scala.Tuple2;
 
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * This is an example of Sparking reading HBase.
+ */
 @Slf4j
-// @Component
+@Deprecated
 public class ReadSpark implements Serializable {
 
     public void execute(JavaSparkContext javaSparkContext) {

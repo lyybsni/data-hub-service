@@ -1,4 +1,4 @@
-package zone.richardli.datahub.model.applicant;
+package zone.richardli.datahub.deprecated.applicant;
 
 import dev.morphia.annotations.Embedded;
 import dev.morphia.annotations.Entity;
@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.util.Date;
 
+@Deprecated
 @Data
 @Entity("applicants")
 public class ApplicantPO {

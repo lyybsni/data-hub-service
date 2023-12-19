@@ -1,10 +1,11 @@
-package zone.richardli.datahub.model.applicant;
+package zone.richardli.datahub.deprecated.applicant;
 
 import lombok.Data;
 
 /**
  * The input schema assumed to be provided by the external parties
  */
+@Deprecated
 @Data
 public class ApplicantVO {
 

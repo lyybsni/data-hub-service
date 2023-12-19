@@ -1,4 +1,4 @@
-package zone.richardli.datahub.service;
+package zone.richardli.datahub.deprecated.service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -6,8 +6,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.internal.LinkedTreeMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import zone.richardli.datahub.model.applicant.ApplicantPO;
+import zone.richardli.datahub.deprecated.applicant.ApplicantPO;
 import zone.richardli.datahub.model.common.FieldDefinition;
+import zone.richardli.datahub.service.ApplicantService;
+import zone.richardli.datahub.service.POSaver;
 
 import java.util.Arrays;
 import java.util.HashMap;

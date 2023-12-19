@@ -6,9 +6,9 @@ import dev.morphia.query.experimental.updates.UpdateOperators;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import zone.richardli.datahub.model.applicant.ApplicantDTO;
-import zone.richardli.datahub.model.applicant.ApplicantPO;
-import zone.richardli.datahub.model.applicant.ApplicantVO;
+import zone.richardli.datahub.deprecated.applicant.ApplicantDTO;
+import zone.richardli.datahub.deprecated.applicant.ApplicantPO;
+import zone.richardli.datahub.deprecated.applicant.ApplicantVO;
 
 import java.util.List;
 import java.util.stream.Collectors;
