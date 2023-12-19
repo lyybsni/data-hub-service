@@ -46,7 +46,8 @@ public class AdminService {
                 id,
                 vo.getSchema(),
                 OffsetDateTime.now(),
-                OffsetDateTime.now()
+                OffsetDateTime.now(),
+                1
         ));
         return id;
     }
@@ -56,7 +57,8 @@ public class AdminService {
         datastore.find(SchemaPO.class)
                 .filter(Filters.eq("_id", vo.getId()))
                 .update(UpdateOperators.set("schema", vo.getSchema()),
-                        UpdateOperators.set("updatedAt", OffsetDateTime.now()))
+                        UpdateOperators.set("updatedAt", OffsetDateTime.now()),
+                        UpdateOperators.inc("version"))
                 .execute();
     }
 
@@ -87,25 +89,33 @@ public class AdminService {
             v.setPath(k);
         });
 
+        String displayName = String.format("%s-%s", OffsetDateTime.now(), vo.getDisplayName());
+
         datastore.save(new SchemaMappingPO(
                 id,
+                displayName,
                 new ArrayList<>(vo.getMapping().values()),
                 collection.get(),
                 primary,
                 temp,
                 OffsetDateTime.now(),
-                OffsetDateTime.now()
+                OffsetDateTime.now(),
+                1
         ));
         return id;
     }
 
     @Loggable
     public void updateSchemaMapping(SchemaMappingVO vo) {
+        String displayName = String.format("%s-%s", OffsetDateTime.now(), vo.getDisplayName());
+
         datastore.find(SchemaMappingPO.class)
                 .filter(Filters.eq("_id", vo.getMappingId()))
                 .update(
                         UpdateOperators.set("mapping", new ArrayList<>(vo.getMapping().values())),
-                        UpdateOperators.set("updatedAt", OffsetDateTime.now())
+                        UpdateOperators.set("updatedAt", OffsetDateTime.now()),
+                        UpdateOperators.set("displayName", displayName),
+                        UpdateOperators.inc("version")
                 )
                 .execute();
     }

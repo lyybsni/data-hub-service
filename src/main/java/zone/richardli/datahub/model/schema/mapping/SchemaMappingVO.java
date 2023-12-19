@@ -14,4 +14,6 @@ public class SchemaMappingVO {
 
     private String mappingId;
 
+    private String displayName;
+
 }

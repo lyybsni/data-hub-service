@@ -23,11 +23,15 @@ public class SchemaMappingPO {
     private String id;
 
     @Property
+    private String displayName;
+
+    @Property
     private List<FieldDefinition> mapping;
 
     @Property
     private String collection;
 
+    @Deprecated
     @Property
     private List<String> primaryKey;
 
@@ -39,5 +43,8 @@ public class SchemaMappingPO {
 
     @Property
     private OffsetDateTime updatedAt;
+
+    @Property
+    private int version = 1;
 
 }

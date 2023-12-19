@@ -1,4 +1,4 @@
-package zone.richardli.datahub.service;
+package zone.richardli.datahub.deprecated;
 
 import java.util.List;
 

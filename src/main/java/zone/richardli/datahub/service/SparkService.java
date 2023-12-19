@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import zone.richardli.datahub.advise.exceptions.InvalidInputException;
+import zone.richardli.datahub.model.common.FieldDefinition;
 import zone.richardli.datahub.model.ingest.DataIngestDTO;
 import zone.richardli.datahub.model.ingest.DataIngestVO;
 import zone.richardli.datahub.model.log.Loggable;
@@ -53,7 +54,11 @@ public class SparkService {
 
         // (String) JSONUtils.parseJSONTree(mapping.getSchema().getSchema()).get("[0].name");  // TODO: change this
         String target = mapping.getCollection();
-        List<String> primary = mapping.getPrimaryKey();
+        List<String> primary = mapping.getMapping().stream()
+                .filter(FieldDefinition::isPrimary)
+                .map(FieldDefinition::getPath)
+                .collect(Collectors.toList());
+
         String targetCollectionName = String.format("%s-%s-%s", target, vo.getClientId(), System.currentTimeMillis());
 
         log.info("-- Start to write into collection: {} --", targetCollectionName);

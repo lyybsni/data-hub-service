@@ -5,14 +5,17 @@ import zone.richardli.datahub.model.common.FieldDefinition;
 import java.util.Map;
 
 public interface IMappingRule {
+    static InheritMapping inheritMapping = new InheritMapping();
+    static RegexMapping regexMapping = new RegexMapping();
+    static ExpressionMapping expressionMapping = new ExpressionMapping();
 
     static IMappingRule getRule(FieldDefinition rule) {
         if (rule.getInherit() != null) {
-            return new InheritMapping();
+            return inheritMapping;
         } else if (rule.getExpression() != null) {
-            return new ExpressionMapping();
+            return regexMapping;
         } else if (rule.getCapturingRegex() != null) {
-            return new RegexMapping();
+            return expressionMapping;
         } else {
             throw new RuntimeException("Unsupported mapping rule.");
         }

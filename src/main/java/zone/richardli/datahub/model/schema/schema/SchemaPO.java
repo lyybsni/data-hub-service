@@ -26,4 +26,6 @@ public class SchemaPO {
 
     @Property
     private OffsetDateTime updatedAt;
+
+    private int version = 1;
 }

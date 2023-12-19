@@ -1,4 +1,4 @@
-package zone.richardli.datahub.utility;
+package zone.richardli.datahub.deprecated;
 
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.HColumnDescriptor;

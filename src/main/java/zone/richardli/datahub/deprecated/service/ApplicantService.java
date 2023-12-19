@@ -1,4 +1,4 @@
-package zone.richardli.datahub.service;
+package zone.richardli.datahub.deprecated.service;
 
 import dev.morphia.Datastore;
 import dev.morphia.query.experimental.filters.Filters;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import zone.richardli.datahub.deprecated.applicant.ApplicantDTO;
 import zone.richardli.datahub.deprecated.applicant.ApplicantPO;
 import zone.richardli.datahub.deprecated.applicant.ApplicantVO;
+import zone.richardli.datahub.deprecated.POSaver;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ import java.util.stream.StreamSupport;
 @Service
 @Slf4j
 @AllArgsConstructor
+@Deprecated
 public class ApplicantService implements POSaver<ApplicantPO> {
 
     private Datastore datastore;

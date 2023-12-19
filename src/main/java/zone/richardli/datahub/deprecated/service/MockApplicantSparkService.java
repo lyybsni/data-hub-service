@@ -8,8 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import zone.richardli.datahub.deprecated.applicant.ApplicantPO;
 import zone.richardli.datahub.model.common.FieldDefinition;
-import zone.richardli.datahub.service.ApplicantService;
-import zone.richardli.datahub.service.POSaver;
+import zone.richardli.datahub.deprecated.POSaver;
 
 import java.util.Arrays;
 import java.util.HashMap;
