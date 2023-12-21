@@ -40,12 +40,12 @@ public class AdminController {
 
     private final LogService logService;
 
-    @GetMapping("/user")
+    @GetMapping("/users")
     List<User> viewUserList() {
         return userService.userList();
     }
 
-    @GetMapping("/project")
+    @GetMapping("/projects")
     List<Project> viewProjectList() {
         return userService.projectList();
     }
@@ -61,12 +61,12 @@ public class AdminController {
     }
 
     @PostMapping("/project")
-    void createProject(CreateProjectVO vo) {
+    void createProject(@RequestBody CreateProjectVO vo) {
         userService.createProject(vo);
     }
 
     @PutMapping("/project")
-    void updateProject(UpdateProjectVO vo) {
+    void updateProject(@RequestBody UpdateProjectVO vo) {
         userService.assignProjectPrivileges(vo);
     }
 

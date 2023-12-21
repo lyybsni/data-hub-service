@@ -1,8 +1,6 @@
-package zone.richardli.datahub.task;
+package zone.richardli.datahub.component;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
 
 /**
  * This component will implement Kafka listeners.

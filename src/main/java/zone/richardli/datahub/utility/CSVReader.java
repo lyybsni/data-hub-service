@@ -1,4 +1,4 @@
-package zone.richardli.datahub.task;
+package zone.richardli.datahub.utility;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

@@ -1,4 +1,4 @@
-package zone.richardli.datahub.task;
+package zone.richardli.datahub.component;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;

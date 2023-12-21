@@ -16,8 +16,8 @@ import zone.richardli.datahub.model.schema.mapping.SchemaMappingVO;
 import zone.richardli.datahub.model.schema.schema.SchemaPO;
 import zone.richardli.datahub.model.schema.schema.SchemaVO;
 import zone.richardli.datahub.model.schema.schema.TreeNode;
-import zone.richardli.datahub.task.CSVReader;
-import zone.richardli.datahub.utility.IdUtil;
+import zone.richardli.datahub.utility.CSVReader;
+import zone.richardli.datahub.utility.IdUtils;
 import zone.richardli.datahub.utility.JSONUtils;
 
 import java.io.IOException;
@@ -41,7 +41,7 @@ public class AdminService {
 
     @Loggable
     public String saveSchema(SchemaVO vo) {
-        String id = IdUtil.generateId();
+        String id = IdUtils.generateId();
         datastore.save(new SchemaPO(
                 id,
                 vo.getSchema(),
@@ -75,7 +75,7 @@ public class AdminService {
 
     @Loggable
     public String saveSchemaMapping(SchemaMappingVO vo) {
-        String id = IdUtil.generateId();
+        String id = IdUtils.generateId();
         List<String> primary = new ArrayList<>();
         SchemaPO temp = new SchemaPO();
         temp.setId(vo.getSchemaId());
@@ -148,7 +148,7 @@ public class AdminService {
             Map<String, Object> input = (Map<String, Object>) csvReader.readFileCSV(file).toArray()[0];
             dto.setFields(input.entrySet().stream().map(entry -> {
                 TreeNode field = new TreeNode();
-                field.setId(IdUtil.generateId());
+                field.setId(IdUtils.generateId());
                 field.setPath(entry.getKey());
                 field.setName(entry.getKey());
                 field.setType(entry.getValue().getClass().getSimpleName());
@@ -186,7 +186,7 @@ public class AdminService {
             boolean isArray = possibleName.endsWith("[0]");
             String name = possibleName.replace("[0]", "");
             String type = isArray ? "Array" : (String) res;
-            String id = IdUtil.generateId();
+            String id = IdUtils.generateId();
 
             node.setArray(isArray);
             node.setId(id);

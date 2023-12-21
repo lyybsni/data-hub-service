@@ -11,7 +11,7 @@ import zone.richardli.datahub.model.project.UpdateProjectVO;
 import zone.richardli.datahub.model.user.CreateUserVO;
 import zone.richardli.datahub.model.user.UpdateUserVO;
 import zone.richardli.datahub.model.user.User;
-import zone.richardli.datahub.utility.IdUtil;
+import zone.richardli.datahub.utility.IdUtils;
 
 import java.util.List;
 
@@ -53,7 +53,7 @@ public class UserService {
 
     public void createUser(CreateUserVO vo) {
         User user = new User();
-        user.setId(IdUtil.generateId());
+        user.setId(IdUtils.generateId());
         user.setUsername(vo.getUsername());
         user.setPassword(vo.getPassword());
         user.setRole(vo.getRole());
@@ -63,10 +63,10 @@ public class UserService {
 
     public void createProject(CreateProjectVO vo) {
         Project project = new Project();
-        project.setId(IdUtil.generateId());
+        project.setId(IdUtils.generateId());
         project.setName(vo.getName());
         project.setContactPerson(vo.getContactPerson());
-        project.setClientId(vo.getClientId());
+        project.setClientId(IdUtils.generateClientId());
         datastore.save(project);
     }
 

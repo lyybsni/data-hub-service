@@ -12,7 +12,7 @@ import zone.richardli.datahub.model.ingest.DataIngestDTO;
 import zone.richardli.datahub.model.ingest.DataIngestVO;
 import zone.richardli.datahub.deprecated.service.MockApplicantSparkService;
 import zone.richardli.datahub.service.SparkService;
-import zone.richardli.datahub.task.CSVReader;
+import zone.richardli.datahub.utility.CSVReader;
 
 import java.io.IOException;
 import java.util.List;
